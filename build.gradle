@@ -1,0 +1,40 @@
+plugins {
+    id 'java-library'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'eu.hansolo:evt:1.6'
+    implementation 'eu.hansolo:properties:11.13'
+    implementation 'com.hivemq:hivemq-mqtt-client:1.2.2'
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'eu.hansolo:iotmodules:11.0.0'
+    implementation 'org.slf4j:slf4j-api:2.0.0-alpha0'
+    implementation 'org.slf4j:slf4j-simple:2.0.0-alpha0'
+    implementation 'com.pi4j:pi4j-core:2.0'
+    implementation 'com.pi4j:pi4j-plugin-raspberrypi:2.0'
+    implementation 'com.pi4j:pi4j-plugin-pigpio:2.0'
+}
+
+ext.moduleName = 'eu.hansolo.iotdevice'
+
+jar {
+    from {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        configurations.runtimeClasspath.collect {  it.isDirectory() ? it : zipTree(it)  }
+    } {
+        exclude "META-INF/*.SF"
+        exclude "META-INF/*.DSA"
+        exclude "META-INF/*.RSA"
+    }
+    manifest {
+        attributes(
+                'Implementation-Title': 'IotDevice',
+                'Class-Path': 'iotdevice-11.0.0.jar',
+                'Main-Class': 'eu.hansolo.iotdevice.Main'
+        )
+    }
+}
