@@ -35,7 +35,7 @@ jar {
                 'Implementation-Title': 'IotDevice',
                 //'Class-Path': 'iotdevice-11.0.0.jar',
                 //'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' '),
-                //'Class-Path': '/opt/pi4j/pi4j-core.jar /opt/pi4j/lib/pi4j-library-pigpio.jar /opt/pi4j/lib/pi4j-plugin-raspberrypi.jar /opt/pi4j/pi4j-plugin-pgpio.jar /opt/pi4j/lib/slf4j-api.jar /opt/pi4j/lib/slf4j-simple.jar',
+                //'Class-Path': '/opt/pi4j/lib/pi4j-core.jar /opt/pi4j/lib/pi4j-library-pigpio.jar /opt/pi4j/lib/pi4j-plugin-raspberrypi.jar /opt/pi4j/lib/pi4j-plugin-pigpio.jar /opt/pi4j/lib/slf4j-api.jar /opt/pi4j/lib/slf4j-simple.jar',
                 'Main-Class': 'eu.hansolo.iotdevice.Main'
         )
     }
