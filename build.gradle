@@ -12,11 +12,15 @@ dependencies {
     implementation 'com.hivemq:hivemq-mqtt-client:1.2.2'
     implementation 'com.google.code.gson:gson:2.8.8'
     implementation 'eu.hansolo:iotmodules:11.0.0'
+
+    implementation fileTree(dir: 'libs', include: '*.jar') // load dependencies from /libs folder
+    /*
     implementation 'org.slf4j:slf4j-api:2.0.0-alpha0'
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha0'
     implementation 'com.pi4j:pi4j-core:2.0'
     implementation 'com.pi4j:pi4j-plugin-raspberrypi:2.0'
     implementation 'com.pi4j:pi4j-plugin-pigpio:2.0'
+    */
 }
 
 ext.moduleName = 'eu.hansolo.iotdevice'
@@ -24,7 +28,9 @@ ext.moduleName = 'eu.hansolo.iotdevice'
 jar {
     from {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations.runtimeClasspath.collect {  it.isDirectory() ? it : zipTree(it)  }
+        //configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it)  } // add all dependencies
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && !it.name.startsWith('pi4j') }.collect { zipTree(it) }
+        //configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && (!it.name.startsWith('pi4j') || !it.name.startsWith('slf4j')) }.collect { zipTree(it) } // add all jars except pi4j and slf4
     } {
         exclude "META-INF/*.SF"
         exclude "META-INF/*.DSA"
@@ -33,10 +39,15 @@ jar {
     manifest {
         attributes(
                 'Implementation-Title': 'IotDevice',
-                //'Class-Path': 'iotdevice-11.0.0.jar',
-                //'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' '),
-                //'Class-Path': '/opt/pi4j/lib/pi4j-core.jar /opt/pi4j/lib/pi4j-library-pigpio.jar /opt/pi4j/lib/pi4j-plugin-raspberrypi.jar /opt/pi4j/lib/pi4j-plugin-pigpio.jar /opt/pi4j/lib/slf4j-api.jar /opt/pi4j/lib/slf4j-simple.jar',
+                //'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' '), // add all runtime dependencies to classpath
+                'Class-Path': configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && (it.name.startsWith('pi4j') || it.name.startsWith('slf4j')) }.collect { it.getName() }.join(' lib/'), // only add dpendencies starting with pi4j or slf4j to classpath
                 'Main-Class': 'eu.hansolo.iotdevice.Main'
         )
     }
 }
+
+task copyRuntimeLibs(type: Copy) { // Copy all pi4j and slf4j jars to /build/libs/lib folder
+    into "build/libs/lib"
+    from configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && (it.name.startsWith('pi4j') || it.name.startsWith('slf4j')) }
+}
+build.dependsOn(copyRuntimeLibs) // make sure the build depends on the copyRuntimeLibs task so that it always will be executed when the build runs
