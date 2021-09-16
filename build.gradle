@@ -29,8 +29,7 @@ jar {
     from {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         //configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it)  } // add all dependencies
-        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && !it.name.startsWith('pi4j') }.collect { zipTree(it) }
-        //configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && (!it.name.startsWith('pi4j') || !it.name.startsWith('slf4j')) }.collect { zipTree(it) } // add all jars except pi4j and slf4
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && !it.name.startsWith('pi4j') && !it.name.startsWith('slf4j') }.collect { zipTree(it) } // add all jars except the ones that start with pi4j
     } {
         exclude "META-INF/*.SF"
         exclude "META-INF/*.DSA"
@@ -40,7 +39,7 @@ jar {
         attributes(
                 'Implementation-Title': 'IotDevice',
                 //'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' '), // add all runtime dependencies to classpath
-                'Class-Path': configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && (it.name.startsWith('pi4j') || it.name.startsWith('slf4j')) }.collect { it.getName() }.join(' lib/'), // only add dpendencies starting with pi4j or slf4j to classpath
+                'Class-Path': configurations.runtimeClasspath.findAll { it.name.endsWith('jar') && (it.name.startsWith('pi4j') || it.name.startsWith('slf4j')) }.collect { it.getName() }.join(' ./lib/'), // only add dpendencies starting with pi4j or slf4j to classpath
                 'Main-Class': 'eu.hansolo.iotdevice.Main'
         )
     }
